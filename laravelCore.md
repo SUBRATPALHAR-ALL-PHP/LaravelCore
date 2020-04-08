@@ -38,9 +38,11 @@ Configuration:
     \/ Configuration Files
         All of the configuration files for the Laravel framework are stored in the config directory.
     \/ Directory Permissions
-        Directories within the storage and the bootstrap/cache directories should be writable by your web server or Laravel will not run.
+        Directories within the storage and the bootstrap/cache directories should be writable
+        by your web server or Laravel will not run.
     \/ Additional Configuration
-        config/app.php file contains several options such as timezone and locale that you may wish to change according to your application.
+        config/app.php file contains several options such as timezone and locale
+        that you may wish to change according to your application.
     \/ You may also want to configure a few additional components of Laravel, such as:
         Cache
         Database
@@ -54,9 +56,11 @@ Web Server Configuration:
 
     - Pretty URLs
         Laravel includes a public/.htaccess file that is used to provide URLs without the index.php front controller in the path.
-        Before serving Laravel with Apache, be sure to enable the mod_rewrite module so the .htaccess file will be honored by the server.
+        Before serving Laravel with Apache,
+        be sure to enable the mod_rewrite module so the .htaccess file will be honored by the server.
 
-        If you are using Nginx, the following directive in your site configuration will direct all requests to the index.php front controller:
+        If you are using Nginx,
+        the following directive in your site configuration will direct all requests to the index.php front controller:
         location / { try_files $uri $uri/ /index.php?$query_string; }
 
 
