@@ -167,7 +167,11 @@ Chapter 11 => Official Packages
 
 
 
-
+=======================================================================
+Code Base Analysys
+=======================================================================
+in /opt/lampp/htdocs/laravel-core/app/Http/Kernel.php
+    Api throttle has been set to 'throttle:60,1',
 
 
 
