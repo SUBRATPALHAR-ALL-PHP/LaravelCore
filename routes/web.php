@@ -24,3 +24,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('login/google', 'Auth\LoginController@redirectToProvider');
 Route::get('login/google/callback', 'Auth\LoginController@handleProviderCallback');
 // http://localhost:8000/login/google/callback
+
+Route::get('login/linkedin', 'Auth\LoginController@redirectToProvider');
+Route::get('login/linkedin/callback', 'Auth\LoginController@handleProviderCallback');
+
+
