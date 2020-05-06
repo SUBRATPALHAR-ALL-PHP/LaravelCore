@@ -29,3 +29,4 @@ Route::get('login/linkedin', 'Auth\LoginController@redirectToProvider');
 Route::get('login/linkedin/callback', 'Auth\LoginController@handleProviderCallback');
 
 
+Route::get('/sendEmail', 'SendEmailController@index')->name('home');

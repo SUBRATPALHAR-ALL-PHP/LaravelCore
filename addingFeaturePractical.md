@@ -416,6 +416,90 @@ Authorizing Actions Using Policies
 
 
 
+--------------------------------------------------------------------------
+EMAIL & QUEUE
+--------------------------------------------------------------------------
+  With simple API over the popular [SwiftMailer-library]
+  with [drivers] for SMTP, [Mailgun], Postmark, Amazon SES, and sendmail,
+
+
+  We will trigger an email,
+    Mail::to($request->user())->send(new SubratTest());
+
+  STEPS::
+    define a route to trigger email
+    Route::get('/sendEmail', 'SendEmailController@index');
+    localhost/sendEmail
+
+    create a controller
+      SendEmailController
+        index() {
+          $user = new \stdClass();
+          $user->email='delta.palmate@gmail.com';
+          $Test = Mail::to($user)->send(new SubratTest()); // SubratTest is a mailable
+        }
+    
+    Generating Mailables
+      In Laravel, each type of email sent by your application is represented as a "mailable" class.
+      These classes are stored in the app/Mail directory.
+
+      php artisan make:mail SubratTest // --markdown=emails.orders.shipped
+
+      mailable class build() method, takes customise configuration,
+        define a 'MailTemplate.blade.php' // resources/views/mail/mail.blade.php
+
+        public function build() {
+          return $this->view('mail.mail');
+        }
+
+        any public property defined on your mailable class will automatically be made available to the view.
+          public function __construct(Order $order){$this->order = $order;}
+        or you can pass data via with() method
+          return $this->view('mail.mail')->with(['orderName' => $this->order->name,'orderPrice' => $this->order->price,]);
+
+
+    [API-based-drivers] such as [Mailgun] and Postmark are often simpler and faster than SMTP servers.
+    To use the [Mailgun driver],
+    first install "Guzzle",
+    then set the default option in your config/mail.php configuration file to mailgun.
+  
+    ``composer require guzzlehttp/guzzle
+    
+
+
+    Configure
+
+      config/mail.php
+        'default' => env('MAIL_MAILER', 'mailgun'), // driver setup
+        'from' => ['address' => env('MAIL_FROM_ADDRESS'),'name' => env('MAIL_FROM_NAME')],
+
+      config/services.php
+        'mailgun' => [
+          'domain' => env('MAILGUN_DOMAIN'),
+          'secret' => env('MAILGUN_SECRET'),
+          'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+          // baseurl will autosetup don't give full https address ../v3/domain..
+        ],
+
+    .env values
+      navigate to mailgun dashboard->sending->overview->API|smtp
+      get creds for api
+
+      MAIL_MAILER=mailgun
+      MAIL_HOST=smtp.mailgun.org
+      MAIL_PORT=587
+      MAIL_USERNAME=postmaster@sandbox0123456789.mailgun.org
+      MAIL_PASSWORD=0123456789
+      MAIL_ENCRYPTION=null
+      MAIL_FROM_ADDRESS='email@email.com'
+      MAIL_FROM_NAME="${APP_NAME}"
+
+      MAILGUN_DOMAIN=sandbox1234567890.mailgun.org
+      MAILGUN_SECRET=yoursecret-secret-secret
+
+
+
+
 
 
 
