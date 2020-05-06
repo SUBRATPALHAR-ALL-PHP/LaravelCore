@@ -47,7 +47,7 @@ class LoginController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function redirectToProvider() {
-        return Socialite::driver('linkedin')->redirect();
+        return Socialite::driver('google')->redirect();
     }
 
 
@@ -57,7 +57,7 @@ class LoginController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function handleProviderCallback() {
-        $user = Socialite::driver('linkedin')->user();
+        $user = Socialite::driver('google')->user();
         echo '<pre>';
         print_r($user);
         // $user->token;
