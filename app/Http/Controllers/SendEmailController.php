@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SubratTest;
+use App\Jobs\EmailJob;
 
 class SendEmailController extends Controller
 {
@@ -25,7 +26,13 @@ class SendEmailController extends Controller
     public function index()
     {
       $user = new \stdClass();
-      $user->email='subratpalhar92@gmail.com';
-      $Test = Mail::to($user)->send(new SubratTest());
+      $user->email=env('MY_EMAIL');
+
+      // $Test = Mail::to($user)->send(new SubratTest());
+      // ->later($when, new SubratTest());
+
+      EmailJob::dispatch( Mail::to($user)->send(new SubratTest()));
+      // dispatch(function () {Mail::to(env('MY_EMAIL'))->send(new SubratTest());})->delay(now()->addMinutes(1));
+
     }
 }

@@ -499,6 +499,113 @@ EMAIL & QUEUE
 
 
 
+  -----------
+  Queueing an email
+    $Test = Mail::to($user)->send(new SubratTest());
+    $Test = Mail::to($user)->queue(new SubratTest());
+                           ->later($when, new SubratTest());
+    
+  Pushing To Specific Queues
+    All mailable classes generated using make:mail command, use Illuminate\Bus\Queueable trait,
+    you may call the `onQueue` and `onConnection` methods on any `mailable class instance`,
+    to specify the `connection` and `queue-name`:
+
+    $message = (new SubratTest())->onConnection('sqs')->onQueue('emails');
+
+  Queueing By Default
+    you want to always be queued,
+    you may implement the `ShouldQueue contract` on the class.
+    the `mailable` will `still be queued` since it `implements the contract`:
+
+
+Queues
+  A `Connection` have a `Queue` that `Dispatches` a `JOB`
+  & `Worker` work on it(job)
+  
+  In practical A DRIVER(conection) wait for a JOB(REDIS)
+
+  So, lets create a JOB
+    ``php artisan make:job EmailJob
+    The generated class will implement the Illuminate\Contracts\Queue\ShouldQueue interface,
+    indicating to Laravel that the job should be pushed onto the queue to run `asynchronously`.
+
+    dispatch a job,
+      EmailJob::dispatch($podcast);
+      EmailJob::dispatch($podcast)->delay(now()->addMinutes(10));
+      dispatch(function () {
+        Mail::to('taylor@laravel.com')->send(new WelcomeMessage);
+      })->afterResponse();
+
+    php artisan queue:work --tries=3
+    Job classes handle() method is called when the job is processed by the queue.
+
+  Connection
+    connection to a backend service
+    queue backends, such as Beanstalk, Amazon SQS, Redis, or even a relational database.
+    any given connection can have multiple queue(stack of queue)
+
+  Configuration[config/queue.php]
+    default queue
+      each connection configuration example in config/queue.php contains a queue attribute.
+
+      `connection configurations` for `database`, `Beanstalkd`, `Amazon SQS`, `Redis`,
+      and a `synchronous driver` -- that will execute jobs immediately (for local use).
+    
+    Connection Configuration for Database
+      php artisan queue:table
+      php artisan migrate
+    Connection Configuration for Redis
+      'redis' => [
+        'driver' => 'redis',
+        'connection' => 'default',
+        'queue' => '{default}',
+        'retry_after' => 90,
+      ],
+    
+
+  Connections Vs. Queues
+    $message = (new SubratTest())->onConnection('sqs')->onQueue('emails');
+
+  run a queue
+  php artisan queue:work --queue=high,default
+
+  -----
+    1) Create a Job
+      php artisan make:job EmailJob
+
+      when you will request for to send email,,
+      http://localhost:8000/sendEmail
+      EmailJob::dispatch( Mail::to($user)->send(new SubratTest()));
+      or with helper method
+      dispatch(function () {Mail::to('delta.palmate@gmail.com')->send(new SubratTest());})->delay(now()->addMinutes(1));
+
+    2) configure default queue to database
+      .env QUEUE_CONNECTION=database
+      /config/queue.php 'default' => env('QUEUE_CONNECTION', 'sync'),
+
+    3) setup database
+      php artisan queue:table
+      php artisan queue:failed-table
+      php artisan migrate
+
+    4) php artisan queue:work --tries=3
+
+
+    {
+      "uuid":"d16e849b-72b4-465e-a644-6ba1b2cb17f9",
+      "displayName":"App\\Jobs\\EmailJob","job":"Illuminate\\Queue\\CallQueuedHandler@call",
+      "maxTries":null,
+      "maxExceptions":null,
+      "delay":null,
+      "timeout":null,
+      "timeoutAt":null,
+      "data":{
+        "commandName":"App\\Jobs\\EmailJob",
+        "command":"O:17:\"App\\Jobs\\EmailJob\":8:{s:6:\"\u0000*\u0000job\";N;s:10:\"connection\";N;s:5:\"queue\";N;s:15:\"chainConnection\";N;s:10:\"chainQueue\";N;s:5:\"delay\";N;s:10:\"middleware\";a:0:{}s:7:\"chained\";a:0:{}}"
+      }
+    }
+
+
 
 
 
