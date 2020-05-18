@@ -610,3 +610,110 @@ Queues
 
 
 
+--------------------------------------------------------------------------
+EVENTS & LISTENERS
+--------------------------------------------------------------------------
+
+OBSERVER IMPLEMENTATION
+Think Event & Listeners as another service provider from laravel - EventServiceProvider
+A EVENT can have multiple LISTENERS
+
+--
+  events
+    |-app/events
+  listeners
+    |-app/listeners
+
+--
+Automatic Registartion of event & listeners
+  Add `listeners` & `events` to your `EventServiceProvider`
+    protected $listen = [
+      'App\Events\OrderShipped' => ['App\Listeners\SendShipmentNotification',],
+    ];
+  php artisan event:generate
+
+Manual registration in `EventServiceProvider` boot method
+  public function boot() {
+    parent::boot();
+    Event::listen('event.name', function ($foo, $bar) {});
+  }
+
+Catch multiple events on the same listener.
+  `event name` as their first-argument,
+  the entire `event data array` as their second-argument
+  
+  Event::listen('event.*', function ($eventName, array $data) { });
+
+--
+`LISTENERS's` `handle()` method takes an, `typehinted EVENT` object
+
+Stopping propagation of event
+  stop propagation of a event to other listeners, by returning false from the handle method.
+
+Qued eevrnt listeners
+  if listeners is going to perform a slow task you may queue the task
+  ListenersClass implements ShouldQueue
+
+--
+Dispatching events
+  use event() helper, to dispatch an event.
+
+  use App\Events\OrderShippedEvents;
+    {
+      event( new OrderShipped($order));
+    }
+  // passing an $order to constructor
+
+--
+Event subscriber
+That may subscribes to multiple events.
+register events with $subscribe property
+
+  event:list
+  event:clear
+
+
+==
+Practical
+  1)
+    Add `listeners` & `events` to your `EventServiceProvider`
+
+    protected $listen = [
+      Registered::class => [SendEmailVerificationNotification::class],
+      'App\Events\somethingHappenedEvent' => ['App\Listeners\SendEmailListeners'],
+    ];
+
+    php artisan event:generate
+
+  2)
+    php artisan event:list
+
+  3)
+    In sendEmailController
+    event(new somethingHappenedEvent());
+
+  4)
+    Something Happened..
+    SendEmailListeners handle(somethingHappenedEvent $event) {
+      Mail::to(env('MY_EMAIL'))->send(new SubratTest());
+    }
+
+  ---------------------------------------
+  If you want to get users email detail in `SendEmailListeners handle(somethingHappenedEvent $event)` method,
+  like this,,
+    $event->user->email....
+  > 1::
+    inside sendEmailController
+      event(new somethingHappenedEvent($request->user()));
+  > 2::
+    inside somethingHappenedEvent{} class,,
+      public $user;
+      constructor(User $user) { $this->user = $user}
+  > 3::
+    in SendEmailListeners{} controller, handle() method
+    handle(somethingHappenedEvent $event) {
+      $event->user->email;
+    }
+
+
+

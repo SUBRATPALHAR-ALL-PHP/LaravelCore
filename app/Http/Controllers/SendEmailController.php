@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SubratTest;
 use App\Jobs\EmailJob;
 
+use App\Events\somethingHappenedEvent;
+
 class SendEmailController extends Controller
 {
     /**
@@ -31,8 +33,10 @@ class SendEmailController extends Controller
       // $Test = Mail::to($user)->send(new SubratTest());
       // ->later($when, new SubratTest());
 
-      EmailJob::dispatch( Mail::to($user)->send(new SubratTest()));
+      // EmailJob::dispatch( Mail::to($user)->send(new SubratTest()));
       // dispatch(function () {Mail::to(env('MY_EMAIL'))->send(new SubratTest());})->delay(now()->addMinutes(1));
+
+      event(new somethingHappenedEvent());
 
     }
 }
